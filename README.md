@@ -1,2 +1,2 @@
-# node-red-contrib-deepstream
-Node-red component for Deepstream services
+# node-red-contrib-ds-messages
+Node-red component for Deepstream services and messages 
