@@ -88,6 +88,50 @@ module.exports = function(RED) {
 		});
 	}
 	
+	/****************************** DS Message app *******************************/
+
+
+	function DSMessageApp(config) {
+		var node = this;
+	    RED.nodes.createNode(node, config);
+        node.appName = config.appName;
+        node.socket = config.socket;
+        node.uri = config.uri;
+		node.rasaUrl = config.rasaUrl;
+		node.image = config.image;
+        node.message = config.message;
+	    
+	    createDSClient(node, config, function(client) {
+			try {
+
+				var apps = client.record.getRecord('chat/apps');
+				apps.set(node.uri+'.'+node.appName, 
+							{
+								name: node.appName,
+								socket: node.socket,
+								uri: node.uri,
+								rasaUrl: node.rasaUrl,
+								image: node.image,
+								message: node.message
+
+							})
+			
+			} catch(err) {
+				node.error(err);
+			}
+		});	
+	
+
+		node.on("error", function(error) {
+			node.error("DSMessageAPP Error - " + error);
+        });
+	
+    }
+	
+    RED.nodes.registerType("ds-message-app", DSMessageApp);
+
+
+
 	/****************************** RPC MAKE *******************************/
     function DeepstreamRpcMakeNode(config) {
         var node = this;
@@ -253,6 +297,78 @@ module.exports = function(RED) {
             done();
         });		
     }
+
+	/****************************** DS Message receive *******************************/
+		
+    function DSMessageReceive(config) {
+        var node = this;
+		RED.nodes.createNode(node, config);
+		
+		node.status({fill:"grey",shape:"ring",text:"connecting"});
+		createDSClient(node, config, function(client) {
+			try {
+				node.status({fill:"green",shape:"dot",text:"connected"});
+				var method = config.method; 
+				node.msApp = RED.nodes.getNode(config.msApp);
+				var app_path = node.msApp.uri+"/"+node.msApp.appName+"/"+method;
+				client.event.subscribe(app_path, function(data) {
+					var msg = {
+						payload : data,
+						uid: data.uid
+					}
+					node.send(msg);							
+				});				
+
+			} catch(err) {
+				node.error(err);
+			}
+		});		     
+
+        node.on("close", function(done) {
+            if (node.client) {
+                node.client.close();
+				delete node.client;
+            }
+            done();
+        });		
+    }
+	
+	/****************************** DS Message Listener *******************************/
+		
+    function DSMessageListener(config) {
+        var node = this;
+		RED.nodes.createNode(node, config);
+		
+		node.status({fill:"grey",shape:"ring",text:"connecting"});
+		createDSClient(node, config, function(client) {
+			try {
+				node.status({fill:"green",shape:"dot",text:"connected"});
+				var method = config.method; 
+				client.event.subscribe(method, function(uid) {						
+					if(uid){
+						var record = client.record.getRecord('user/'+uid);
+						record.subscribe('chat.messages', function(data){
+							var msg = {
+								payload : data,
+								uid: uid
+							}
+							node.send(msg);		
+						})
+					}								
+				});
+			} catch(err) {
+				node.error(err);
+			}
+		});		     
+
+        node.on("close", function(done) {
+            if (node.client) {
+                node.client.close();
+				delete node.client;
+            }
+            done();
+        });		
+    }
 	
 	/****************************** Record update *******************************/
     function DeepstreamRecordUpdateNode(config) {
@@ -268,6 +384,107 @@ module.exports = function(RED) {
 					} else {
 						record.set(msg.payload);
 					}	
+					node.status({});
+				} catch(err) {
+					node.error(err);
+				}
+			});
+        });			        
+
+        node.on("close", function(done) {
+            if (node.client) {
+                node.client.close();
+				delete node.client;
+            }
+            done();
+        });
+    }
+    
+	/****************************** DS Message send *******************************/
+    function DSMessageSend(config) {
+        var node = this;
+		RED.nodes.createNode(node, config);		
+				
+		node.on("input", function(msg) {
+			createDSClient(node, config, function(client) {
+				try {
+					// update config client for listen next event if exist
+					// get record_path 'user/uid'
+					
+					msg.record_path = msg.record_path || 'user/'+msg.uid;				
+					var record = client.record.getRecord(msg.record_path);
+					// msg.payload.changed =  msg.payload.changed=="yes" ? "ok" : "yes";
+					// if(!config.nextUri && !msg.next_app_uri)
+					record.set('chat.returnMsg',msg.payload)
+					if(config.nextListener){
+						record.set('chat.config.socket', config.nextListener);
+					}
+					if(config.nextUri || msg.next_app_uri){
+
+						var apps = client.record.getRecord('chat/apps');
+						var appUri = (msg.next_app_uri || config.nextUri)+"."+(msg.next_app_name || config.nextAppName)
+						apps.whenReady(app => {
+							var appData = app.get(appUri);
+							if(appData){	
+								record.whenReady(user => {
+									user.set('chat.config', appData);
+									user.set('chat.config.socket', config.nextListener);
+								})
+								
+							}
+
+						})
+					}
+					
+					node.status({});
+				} catch(err) {
+					node.error(err);
+				}
+			});
+        });			        
+
+        node.on("close", function(done) {
+            if (node.client) {
+                node.client.close();
+				delete node.client;
+            }
+            done();
+        });
+    }
+    
+	
+	/****************************** DS App switcher *******************************/
+    function DSAppSwitcher(config) {
+        var node = this;
+		RED.nodes.createNode(node, config);		
+				
+		node.on("input", function(msg) {
+			createDSClient(node, config, function(client) {
+				try {
+					// update config client for listen next event if exist
+					// get record_path 'user/uid'
+					
+					msg.record_path = 'user/'+msg.uid;				
+					var userData = client.record.getRecord(msg.record_path);
+					var apps = client.record.getRecord('chat/apps');
+					var appUri = (msg.app_uri || config.uri)+"."+(msg.app_name || config.appName)
+					apps.whenReady(app => {
+						var appData = app.get(appUri);
+						if(appData){	
+							userData.whenReady(user => {
+								user.set('chat.config', appData);
+								user.set('chat.returnMsg',{
+									type:"message",
+									content: appData.message,
+									say: appData.message
+								})
+								
+							})
+							
+						}
+
+					})
+					
 					node.status({});
 				} catch(err) {
 					node.error(err);
@@ -371,9 +588,13 @@ module.exports = function(RED) {
 	
     RED.nodes.registerType("Deepstream Event emit",DeepstreamEventEmitNode);
 	RED.nodes.registerType("Deepstream Event subscribe",DeepstreamEventSubscribeNode);
+	RED.nodes.registerType("DS Message receive",DSMessageReceive);
+	RED.nodes.registerType("DS Message listener",DSMessageListener);
 	
 	RED.nodes.registerType("Deepstream Record get",DeepstreamRecordGetNode);
 	RED.nodes.registerType("Deepstream Record update",DeepstreamRecordUpdateNode);
+	RED.nodes.registerType("DS Message send",DSMessageSend);
+	RED.nodes.registerType("DS App switcher",DSAppSwitcher);
 	RED.nodes.registerType("Deepstream Record subscribe",DeepstreamRecordSubscribeNode);
 
 };

@@ -1,24 +1,24 @@
 {
-	"name": "node-red-contrib-deepstream",
+	"name": "node-red-contrib-ds-messages",
 	"version": "1.1.25",
-	"description": "Deepstream Client for NodeRed",
-	"main": "deepstream.js",
-	"node-red" : {
-        "nodes": {
-            "deepstream": "deepstream.js"
-        }
-    },
+	"description": "Deepstream Client Messages for NodeRed",
+	"main": "dsmessages.js",
+	"node-red": {
+		"nodes": {
+			"dsmessages": "dsmessages.js"
+		}
+	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/julien-pal/node-red-contrib-deepstream.git"
+		"url": ""
 	},
 	"keywords": [
 		"node-red",
-		"deepstream"
+		"ds-messages"
 	],
 	"dependencies": {
 		"deepstream.io-client-js": "2.1.1"
 	},
-	"author": "Julien Pal",
+	"author": "Abdelhay",
 	"license": "ISC"
 }

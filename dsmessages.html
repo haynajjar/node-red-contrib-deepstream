@@ -38,7 +38,7 @@
         },
         inputs:1,
         outputs:1,
-        icon: "deepstream.svg",
+        icon: "ds-message.svg",
         label: function() {
             return this.name || "Deepstream RPC Make";
         },
@@ -84,7 +84,7 @@
         },
         inputs:0,
         outputs:1,
-        icon: "deepstream.svg",
+        icon: "ds-message.svg",
         label: function() {
             return this.name||"Deepstream RPC";
         },
@@ -117,7 +117,7 @@
         inputs:1,
         outputs:0,
 		align: 'right',
-        icon: "deepstream.svg",
+        icon: "ds-message.svg",
         label: function() {
             return this.name||"Deepstream RPC";
         },
@@ -166,7 +166,7 @@
 		align: 'right',
         inputs:1,
         outputs:0,
-        icon: "deepstream.svg",
+        icon: "ds-message.svg",
         label: function() {
             return this.name||"Deepstream Event";
         },
@@ -178,7 +178,7 @@
 
 <!-- ***************** Event subscribe *********************** -->
 <script type="text/x-red" data-template-name="Deepstream Event subscribe">
-	<div class="form-row">
+    <div class="form-row">
         <label for="node-input-server" style="width: 110px;"><i class="fa fa-bookmark"></i>Server</label>
         <input type="text" id="node-input-server">
     </div>
@@ -194,9 +194,9 @@
 
 <script type="text/x-red" data-help-name="Deepstream Event subscribe">
     <p>Connects to a server using the deepstream protocol to subscribe to an event.</p>
-	<p>The parameter <code>Event</code> (or <code>msg.topic</code>) will define the event to which we subscribe.</p>
-	<br>
-	<p>The output will be put in <code>msg.payload</code></p>
+    <p>The parameter <code>Event</code> (or <code>msg.topic</code>) will define the event to which we subscribe.</p>
+    <br>
+    <p>The output will be put in <code>msg.payload</code></p>
 </script>
 
 <script type="text/javascript">
@@ -210,9 +210,103 @@
         },
         inputs:0,
         outputs:1,
-        icon: "deepstream.svg",
+        icon: "ds-message.svg",
         label: function() {
             return this.name||"Deepstream Event";
+        },
+        labelStyle: function() {
+            return (this.name)?"node_label_italic":"";
+        }
+    });
+</script>
+
+<!-- ***************** DS Message receive *********************** -->
+<script type="text/x-red" data-template-name="DS Message receive">
+    <div class="form-row">
+        <label for="node-input-server" style="width: 110px;"><i class="fa fa-bookmark"></i>Server</label>
+        <input type="text" id="node-input-server">
+    </div>  
+    <div class="form-row">
+        <label for="node-input-msApp" style="width: 110px;"><i class="fa fa-bookmark"></i>App</label>
+        <input type="text" id="node-input-msApp">
+    </div>
+    <div class="form-row">
+        <label for="node-input-method" style="width: 110px;"><i class="fa fa-envelope"></i>Event</label>
+        <input type="text" id="node-input-method" placeholder="method">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name" style="width: 110px;"><i class="fa fa-tag"></i>Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="DS Message receive">
+    <p>Connects to a server using the deepstream protocol to subscribe to an event.</p>
+    <p>The parameter <code>Event</code> will define the event to which we subscribe.</p>
+    <br>
+    <p>The output will be put in <code>msg.payload</code></p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('DS Message receive',{
+        category: 'input',
+        color:"#0FBBEC",
+        defaults: {
+            name: {value:""},
+            server: {type:"deepstream-server",required:true},
+            msApp: {type:"ds-message-app",required:true},
+            method: {value:"",required:true}
+        },
+        inputs:0,
+        outputs:1,
+        icon: "ds-message.svg",
+        label: function() {
+            return this.name||"DS Message receive";
+        },
+        labelStyle: function() {
+            return (this.name)?"node_label_italic":"";
+        }
+    });
+</script>
+
+<!-- ***************** DS Message Listener *********************** -->
+<script type="text/x-red" data-template-name="DS Message listener">
+    <div class="form-row">
+        <label for="node-input-server" style="width: 110px;"><i class="fa fa-bookmark"></i>Server</label>
+        <input type="text" id="node-input-server">
+    </div>	
+    <div class="form-row">
+        <label for="node-input-method" style="width: 110px;"><i class="fa fa-envelope"></i>Event</label>
+        <input type="text" id="node-input-method" placeholder="method">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name" style="width: 110px;"><i class="fa fa-tag"></i>Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="DS Message listener">
+    <p>Connects to a server using the deepstream protocol to subscribe to an event.</p>
+	<p>The parameter <code>Event</code> will define the event to which we subscribe.</p>
+	<br>
+    <p>Listener for user messages</p>
+	<p>The output will be put in <code>msg.payload</code></p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('DS Message listener',{
+        category: 'input',
+        color:"#0FBBEC",
+        defaults: {
+            name: {value:""},
+            server: {type:"deepstream-server",required:true},
+            method: {value:"",required:true}
+        },
+        inputs:0,
+        outputs:1,
+        icon: "ds-message.svg",
+        label: function() {
+            return this.name||"DS Message listener";
         },
         labelStyle: function() {
             return (this.name)?"node_label_italic":"";
@@ -262,7 +356,7 @@
         },
         inputs:1,
         outputs:0,
-        icon: "deepstream.svg",
+        icon: "ds-message.svg",
 		align: 'right',
         label: function() {
             return this.name||"Deepstream Record";
@@ -272,6 +366,126 @@
         }
     });
 </script>
+
+
+
+
+<!-- ***************** Message send *********************** -->
+<script type="text/x-red" data-template-name="DS Message send">
+    <div class="form-row">
+        <label for="node-input-server" style="width: 110px;"><i class="fa fa-bookmark"></i>Server</label>
+        <input type="text" id="node-input-server">
+    </div>      
+   
+    <div class="form-row">
+        <label for="node-input-nextListener" style="width: 110px;"><i class="fa fa-envelope"></i>Next listener</label>
+        <input type="text" id="node-input-nextListener" placeholder="next listener">
+    </div>
+    <div class="form-row">
+        <label for="node-input-nextUri" style="width: 110px;"><i class="fa fa-envelope"></i>Next Uri</label>
+        <input type="text" id="node-input-nextUri" placeholder="next Uri">
+    </div>
+    <div class="form-row">
+        <label for="node-input-nextAppName" style="width: 110px;"><i class="fa fa-envelope"></i>Next App Name</label>
+        <input type="text" id="node-input-nextAppName" placeholder="Next App Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name" style="width: 110px;"><i class="fa fa-tag"></i>Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="DS Message send">
+    <p>Connects to a server using the deepstream protocol update a Record</p>
+    <p>Retrieve the record with record Path<code>msg.record_path</code> or message will be determined by <code>msg.uid</code></p>  
+    <br/>
+    <p>you can redirect to a new app by setting <code>config.nextUri</code> and <code>config.nextAppName</code> or you can just pass them in msg object as <code>msg.next_app_uri</code> and <code>msg.next_app_name</code></p>
+    <br />
+    <p>If the <code>path</code> value is defined it updated the specified path of the record,  otherwise it replace all data</p>   
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('DS Message send',{
+        category: 'output',
+        color:"#0FBBEC",
+        defaults: {
+            name: {value:""},
+            server: {
+                type:"deepstream-server",
+                required:true
+            },
+            nextListener: {},
+            nextUri: {value:""},
+            nextAppName: {value:""}
+        },
+        inputs:1,
+        outputs:0,
+        icon: "ds-message.svg",
+        align: 'right',
+        label: function() {
+            return this.name||"DS Message send";
+        },
+        labelStyle: function() {
+            return (this.name)?"node_label_italic":"";
+        }
+    });
+</script>
+
+
+<!-- ***************** App switcher *********************** -->
+<script type="text/x-red" data-template-name="DS App switcher">
+    <div class="form-row">
+        <label for="node-input-server" style="width: 110px;"><i class="fa fa-bookmark"></i>Server</label>
+        <input type="text" id="node-input-server">
+    </div>      
+   
+    <div class="form-row">
+        <label for="node-input-uri" style="width: 110px;"><i class="fa fa-envelope"></i>App Uri</label>
+        <input type="text" id="node-input-uri" placeholder="App uri">
+    </div>
+    <div class="form-row">
+        <label for="node-input-appName" style="width: 110px;"><i class="fa fa-envelope"></i>App Name</label>
+        <input type="text" id="node-input-appName" placeholder="App appName">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name" style="width: 110px;"><i class="fa fa-tag"></i>Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="DS App switcher">
+    <p>Connects to a server using the deepstream protocol update config record and returnMsg</p>
+    <p>Uses <code>msg.uid</code> to determine user messages record and update chat.config</p>  
+    <br/>
+    <p>If <code>msg.app_uri</code> and <code>msg.app_name</code> are empty, value is defined by config <code>appName</code> and <code>uri</code></p>   
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('DS App switcher',{
+        category: 'output',
+        color:"#0FBBEC",
+        defaults: {
+            name: {value:""},
+            server: {
+                type:"deepstream-server",
+                required:true
+            },
+            appName: {value:""},
+            uri: {value:""}
+        },
+        inputs:1,
+        outputs:0,
+        icon: "ds-message.svg",
+        align: 'right',
+        label: function() {
+            return this.name||"DS App switcher";
+        },
+        labelStyle: function() {
+            return (this.name)?"node_label_italic":"";
+        }
+    });
+</script>
+
 
 <!-- ***************** Record subscribe *********************** -->
 <script type="text/x-red" data-template-name="Deepstream Record subscribe">
@@ -318,7 +532,7 @@
         },
         inputs: 1,
         outputs:1,
-        icon: "deepstream.svg",
+        icon: "ds-message.svg",
         label: function() {
             return this.name||"Deepstream Record";
         },
@@ -363,7 +577,7 @@
         },
         inputs:1,
         outputs:1,
-        icon: "deepstream.svg",
+        icon: "ds-message.svg",
         label: function() {
             return this.name||"Deepstream Record Get";
         },
@@ -372,6 +586,79 @@
         }
     });
 </script>
+
+<!-- ***************** DS APP CONFIG *********************** -->
+<script type="text/x-red" data-template-name="ds-message-app">
+    <div class="form-row">
+        <label for="node-config-input-server" style="width: 110px;"><i class="fa fa-bookmark"></i>Server</label>
+        <input type="text" id="node-config-input-server">
+    </div>
+    <div class="form-row node-input-msApp">
+        <label for="node-config-input-appName" style="width: 110px;"><i class="fa fa-envelope"></i>App Name</label>
+        <input type="text" id="node-config-input-appName" placeholder="appName">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-socket" style="width: 110px;"><i class="fa fa-tag"></i>Listen</label>
+        <input type="text" id="node-config-input-socket" placeholder="Listen">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-uri" style="width: 110px;"><i class="fa fa-tag"></i>URI</label>
+        <input type="text" id="node-config-input-uri" placeholder="URI">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-image" style="width: 110px;"><i class="fa fa-tag"></i>Logo URL</label>
+        <input type="text" id="node-config-input-image" placeholder="logo url">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-rasaUrl" style="width: 110px;"><i class="fa fa-tag"></i>Rasa Url</label>
+        <input type="text" id="node-config-input-rasaUrl" placeholder="rasaUrl">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-name" style="width: 110px;"><i class="fa fa-tag"></i>Name</label>
+        <input type="text" id="node-config-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-message" style="width: 110px;"><i class="fa fa-tag"></i>Message</label>
+        <textarea id="node-config-input-message" placeholder="Message" />
+    </div>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('ds-message-app',{
+        category: 'config',
+        defaults: {
+            server: {type:"deepstream-server",required:true},
+            appName: {
+                value:"",
+                required: true
+            },       
+            socket: {
+                value:"",
+                required: true
+            },       
+            uri: {
+                value:"",
+                required: true
+            },       
+            image: {
+                value:"",
+                required: true
+            },       
+            rasaUrl: {
+                value:""
+            },       
+            message: {
+                value:"",
+                required: true
+            },  
+            name: {}
+        },
+        label: function() {
+            return (this.name ? this.name : this.appName);
+        }
+    });
+</script>
+
 
 <!-- ***************** SERVER CONFIG *********************** -->
 <script type="text/x-red" data-template-name="deepstream-server">
